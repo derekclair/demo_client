@@ -18,9 +18,7 @@ export default class App extends Component {
 
     const wsClient = new SubscriptionClient('ws://localhost:8090', {
       reconnect: true,
-      connectionParams: {
-        // Pass any arguments you want for initialization
-      },
+      connectionParams: { randomId: Math.floor(Math.random() * 10000) },
     });
 
     const networkInterface = createNetworkInterface({
@@ -34,11 +32,29 @@ export default class App extends Component {
       connectToDevTools: true,
       dataIdFromObject: (r) => (r.id),
     });
+
+		this.setUser = this._setUser.bind(this);
+		this.setAuthorId = this._setAuthorId.bind(this);
+
+		this.state = {
+			authorId: null,
+			firstName: null,
+			lastName: null,
+		};
   }
+
+	_setUser(firstName, lastName) { this.setState({ firstName, lastName }); }
+
+	_setAuthorId(authorId) { this.setState({ authorId }); }
+
   render() {
     return (
       <ApolloProvider client={this.client}>
-        <PostList />
+        <PostList
+					setAuthorId={this.setAuthorId}
+					setUser={this.setUser}
+					{...this.state}
+				/>
       </ApolloProvider>
     );
   }

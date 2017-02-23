@@ -3,6 +3,8 @@ import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
 import PostUpvoter from './PostUpvoter';
+import AddAuthor from './AddAuthor';
+import AddPost from './AddPost';
 
 export default graphql(gql`
   subscription postUpvoted {
@@ -15,7 +17,7 @@ export default graphql(gql`
   query allPosts {
     posts {
       id
-      title
+      comment
       votes
       author {
         id
@@ -26,26 +28,42 @@ export default graphql(gql`
   }
 `)(({
   data: { loading, posts },
+  ...props,
 }) => {
   if (loading) { return (<div>Loading</div>); }
   
   return (
-    <ul>
-      {[...posts].sort((x, y) => (y.votes - x.votes)).map(({
-        id,
-        title,
-        author,
-        votes,
-      }) =>
-        <li key={id}>
-          {title} by {' '}
-          {author.firstName} {author.lastName} {' '}
-          <span>
-            ({votes} votes)
-          </span>
-          <PostUpvoter postId={id} />
-        </li>
-      )}
-    </ul>
+    <div>
+      <h1>
+        Demo:
+      </h1>
+      <h3>
+        GrahpQL + Demo
+      </h3>
+      <ul>
+        {[...posts].sort((x, y) => (y.votes - x.votes)).map(({
+          id,
+          comment,
+          author,
+          votes,
+        }) =>
+          <li key={id}>
+            {comment}
+            <span>
+              ({votes} votes)
+            </span>
+            <div>
+              {author.firstName} {author.lastName}
+              <PostUpvoter postId={id} />
+            </div>
+          </li>
+        )}
+      </ul>
+      {props.authorId ?
+        <AddPost {...props} />
+        :
+        <AddAuthor {...props} />
+      }
+    </div>
   );
 }));
